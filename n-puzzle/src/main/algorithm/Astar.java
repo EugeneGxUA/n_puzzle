@@ -24,9 +24,6 @@ public class Astar <TState extends State, TRules extends Rules<TState>> {
         List<TState> close = new LinkedList<TState>();
         Queue<TState> open = new PriorityQueue<TState>();
 
-
-
-
         return null;
     }
 }
