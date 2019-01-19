@@ -1,5 +1,7 @@
 package states;
 
+import java.util.Objects;
+
 /**
  * @author Eugene Garagulya on 1/19/19.
  */
@@ -34,18 +36,22 @@ public abstract class State {
         this.parent = parent;
     }
 
-    @Override
-    public boolean equals(Object obj) {
+    public int getF() {
+        return g + h;
+    }
 
-        try {
-            State state = (State) obj;
-            if (state.g == this.g && state.h == this.h) {
-                return true;
-            } else {
-                return false;
-            }
-        } catch (ClassCastException e) {
-            return false;
-        }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        State state = (State) o;
+        return g == state.g &&
+                h == state.h &&
+                Objects.equals(parent, state.parent);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(g, h, parent);
     }
 }
