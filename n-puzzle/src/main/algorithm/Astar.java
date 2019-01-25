@@ -4,8 +4,9 @@ package main.algorithm;
  * @author Eugene Garagulya on 1/19/19.
  */
 
-import states.State;
-import states.interfaces.Rules;
+import main.algorithm.states.State;
+import main.algorithm.interfaces.Rules;
+import main.fteen.FifteenState;
 
 import java.util.*;
 
@@ -16,24 +17,57 @@ public class Astar <TState extends State, TRules extends Rules<TState>> {
 
     /**
      * @param startState - start state.
-     * @return последовательность состояния от заданного до терминального.
+     * @return sequence of main.algorithm.states from initial to final
      *
-     * Применяеться алгоритм А* для поиска кратчайшего пути до терминального состояния от указанного.
+     * Algorithm А* to search for a shorter path to the terminal state selected.
      */
     public Collection<State> search(TState startState) {
-        List<TState> close = new LinkedList<TState>();
-        Queue<TState> open = new PriorityQueue<TState>();
+        //initialise close list - list of elements which we already used
+        List<Integer> close = new LinkedList<Integer>();
+        //initialise open q - list of elements which we need to check
+        Queue<TState> open = new PriorityQueue<TState>(8);
 
+        //add to open list startState - start position
         open.add(startState);
+        //At start pos G is 0
         startState.setG(0);
+        //get cost of this vertex
         startState.setH(rules.getH(startState));
 
+        //While open list is not empty use algo
         while (!open.isEmpty()) {
-            TState x = getStateWithMinF(open);
-            if (rules.isTerminate(x)) {
-                closeStates =  close.size();
-                return completeSolution(x);
+            TState stateWithMinF = getStateWithMinF(open);
+            if (rules.isTerminate(stateWithMinF)) {
+                closedStates =  close.size();
+                return completeSolution(stateWithMinF);
             }
+            open.remove(stateWithMinF);
+            System.out.println("On this step is the best way is --> \n" + stateWithMinF.toString());
+
+            close.add(stateWithMinF.hashCode());
+            List<TState> neighbors = rules.getNeighbors(stateWithMinF);
+            for (TState neighbor : neighbors) {
+                if (close.contains(neighbor.hashCode())) {
+                    continue;
+                }
+
+                int g = stateWithMinF.getG() + rules.getDistance(stateWithMinF, neighbor);
+                boolean isBestPath;
+                if (!open.contains(neighbor)) {
+                    neighbor.setH(rules.getH(neighbor));
+                    open.add(neighbor);
+                    isBestPath = true;
+                } else {
+                    isBestPath = g < neighbor.getG();
+                }
+
+                if (isBestPath) {
+                    neighbor.setParent(stateWithMinF);
+                    neighbor.setG(g);
+                }
+
+            }
+
         }
 
         return null;
@@ -41,10 +75,10 @@ public class Astar <TState extends State, TRules extends Rules<TState>> {
 
 
     /**
-     * This method create sequence of states from initial to final
+     * This method creates sequence of main.algorithm.states from initial to final
      *
      * @param terminate last state
-     * @return sequences of states passed from initial to final
+     * @return sequences of main.algorithm.states passed from initial to final
      */
     private Collection<State> completeSolution(TState terminate) {
         Deque<TState> path = new LinkedList<TState>();
@@ -57,22 +91,28 @@ public class Astar <TState extends State, TRules extends Rules<TState>> {
     }
 
     /**
-     * This method search top with smaller weight in list
+     * This method searches vertices with smallest weight in list
      *
-     * @param open list with opened tops
-     * @return top with smaller weight
+     * @param open list with opened vertices
+     * @return vertex with smallest weight
      */
     private TState getStateWithMinF(Collection<TState> open) {
-        TState top = null;
+        TState vertex = null;
         int min = Integer.MAX_VALUE;
         for (TState state : open) {
+
             if (state.getF() < min) {
                 min = state.getF();
-                top = state;
+                vertex = state;
             }
+
         }
 
-        return top;
+        return vertex;
+    }
+
+    public int getClosedStatesCount() {
+        return closedStates;
     }
 
 
@@ -86,5 +126,5 @@ public class Astar <TState extends State, TRules extends Rules<TState>> {
     }
 
     private TRules rules;
-    private int closeStates = 0;
+    private int closedStates = 0;
 }
