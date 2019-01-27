@@ -6,6 +6,7 @@ package main.algorithm;
 
 import main.algorithm.states.State;
 import main.algorithm.interfaces.Rules;
+import main.exceptions.NotFound;
 import main.fteen.FifteenState;
 
 import java.util.*;
@@ -21,56 +22,110 @@ public class Astar <TState extends State, TRules extends Rules<TState>> {
      *
      * Algorithm А* to search for a shorter path to the terminal state selected.
      */
-    public Collection<State> search(TState startState) {
-        //initialise close list - list of elements which we already used
-        List<Integer> close = new LinkedList<Integer>();
-        //initialise open q - list of elements which we need to check
-        Queue<TState> open = new PriorityQueue<TState>(8);
+//    public Collection<State> search(TState startState) {
+//        //initialise close list - list of elements which we already used
+//        List<Integer> close = new LinkedList<Integer>();
+//        //initialise open q - list of elements which we need to check
+//        Queue<TState> open = new PriorityQueue<TState>(8);
+//
+//        //add to open list startState - start position
+//        open.add(startState);
+//        //At start pos G is 0
+//        startState.setG(0);
+//        //get cost of this vertex
+//        startState.setH(rules.getH(startState));
+//
+//        //While open list is not empty use algo
+//        while (!open.isEmpty()) {
+//            TState stateWithMinF = getStateWithMinF(open);
+//            if (rules.isTerminate(stateWithMinF)) {
+//                closedStates =  close.size();
+//                return completeSolution(stateWithMinF);
+//            }
+//            open.remove(stateWithMinF);
+//            System.out.println("On this step is the best way is --> \n" + stateWithMinF.toString());
+//
+//            close.add(stateWithMinF.hashCode());
+//            List<TState> neighbors = rules.getNeighbors(stateWithMinF);
+//            for (TState neighbor : neighbors) {
+//                if (close.contains(neighbor.hashCode())) {
+//                    continue;
+//                }
+//
+//                int g = stateWithMinF.getG() + rules.getDistance(stateWithMinF, neighbor);
+//                boolean isBestPath;
+//                if (!open.contains(neighbor)) {
+//                    neighbor.setH(rules.getH(neighbor));
+//                    open.add(neighbor);
+//                    isBestPath = true;
+//                } else {
+//                    isBestPath = g < neighbor.getG();
+//                }
+//
+//                if (isBestPath) {
+//                    neighbor.setParent(stateWithMinF);
+//                    neighbor.setG(g);
+//                }
+//
+//            }
+//
+//        }
+//
+//        return null;
+//    }
 
-        //add to open list startState - start position
-        open.add(startState);
-        //At start pos G is 0
-        startState.setG(0);
-        //get cost of this vertex
-        startState.setH(rules.getH(startState));
+    public Collection<TState> search(TState startState) throws NotFound {
 
-        //While open list is not empty use algo
-        while (!open.isEmpty()) {
-            TState stateWithMinF = getStateWithMinF(open);
-            if (rules.isTerminate(stateWithMinF)) {
-                closedStates =  close.size();
-                return completeSolution(stateWithMinF);
-            }
-            open.remove(stateWithMinF);
-            System.out.println("On this step is the best way is --> \n" + stateWithMinF.toString());
 
-            close.add(stateWithMinF.hashCode());
-            List<TState> neighbors = rules.getNeighbors(stateWithMinF);
-            for (TState neighbor : neighbors) {
-                if (close.contains(neighbor.hashCode())) {
-                    continue;
-                }
+        return search(startState, new HashSet<TState>());
+    }
 
-                int g = stateWithMinF.getG() + rules.getDistance(stateWithMinF, neighbor);
-                boolean isBestPath;
-                if (!open.contains(neighbor)) {
-                    neighbor.setH(rules.getH(neighbor));
-                    open.add(neighbor);
-                    isBestPath = true;
-                } else {
-                    isBestPath = g < neighbor.getG();
-                }
+    private List<TState> search(TState startState, Set<TState> alreadyPrecessedStates) throws NotFound {
 
-                if (isBestPath) {
-                    neighbor.setParent(stateWithMinF);
-                    neighbor.setG(g);
-                }
+        System.out.println(startState.toString());
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        alreadyPrecessedStates.add(startState);
 
-            }
-
+        if (rules.isTerminate(startState)) {
+            closedStates = alreadyPrecessedStates.size();
+            List<TState> solution = new ArrayList<>();
+            solution.add(startState);
+            return solution;
         }
 
-        return null;
+        List<TState> neighbors = rules.getNeighbors(startState);
+        for (TState neighbor : neighbors) {
+            neighbor.setG(1);
+            neighbor.setH(rules.getH(neighbor));
+        }
+
+        Collections.sort(neighbors);
+        for (TState neighbor : neighbors) {
+            if (alreadyPrecessedStates.contains(neighbor)) {
+                continue;
+            }
+
+
+            final List<TState> partialSolution; {
+                try {
+                    partialSolution = search(neighbor, alreadyPrecessedStates);
+                } catch (NotFound e) {
+                    continue;
+                }
+            }
+
+            List<TState> solution = new ArrayList<>();
+            solution.add(startState);
+            solution.addAll(partialSolution);
+
+            return solution;
+        }
+
+        throw new NotFound();
     }
 
 

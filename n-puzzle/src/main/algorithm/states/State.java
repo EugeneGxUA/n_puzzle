@@ -5,7 +5,7 @@ import java.util.Objects;
 /**
  * @author Eugene Garagulya on 1/19/19.
  */
-public abstract class State {
+public abstract class State implements Comparable<State> {
 
     private int g;
     private int h;

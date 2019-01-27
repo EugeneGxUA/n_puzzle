@@ -2,6 +2,7 @@ package main.fteen;
 
 import main.algorithm.Astar;
 import main.algorithm.states.State;
+import main.exceptions.NotFound;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -64,23 +65,40 @@ public class MainFifteen {
             Astar<FifteenState, FifteenRules> astar = new Astar<FifteenState, FifteenRules>(rules);
 
             long time = System.currentTimeMillis();
-            Collection<State> res = astar.search(startState);
-            time = System.currentTimeMillis() - time;
+            try {
+                Collection<FifteenState> res = astar.search(startState);
 
-            if (res == null) {
-                System.out.println("Solution not found");
-                System.exit(0);
-            } else {
                 for (State state : res) {
                     System.out.println(state.toString());
                 }
-            }
 
-            if (isShow) {
-                System.out.println("Time " + time + " ms.");
-                System.out.println("Solution length: " + (res.size() - 1));
-                System.out.println("Opened states: " + astar.getClosedStatesCount());
+                if (isShow) {
+
+                    System.out.println("Solution length: " + (res.size() - 1));
+                    System.out.println("Opened states: " + astar.getClosedStatesCount());
+                }
+
+
+            } catch (NotFound e) {
+                System.out.println("Solution not found");
+                System.exit(0);
             }
+            time = System.currentTimeMillis() - time;
+            System.out.println("Time " + time + " ms.");
+//            if (res == null) {
+//                System.out.println("Solution not found");
+//                System.exit(0);
+//            } else {
+//                for (State state : res) {
+//                    System.out.println(state.toString());
+//                }
+//            }
+
+//            if (isShow) {
+//                System.out.println("Time " + time + " ms.");
+//                System.out.println("Solution length: " + (res.size() - 1));
+//                System.out.println("Opened states: " + astar.getClosedStatesCount());
+//            }
 
         } catch (IllegalAccessException e) {
             e.printStackTrace();

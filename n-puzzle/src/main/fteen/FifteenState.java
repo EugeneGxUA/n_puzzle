@@ -4,7 +4,7 @@ import main.algorithm.states.State;
 
 import java.util.Arrays;
 
-public class FifteenState extends State implements Comparable<State>{
+public class FifteenState extends State {
 
     private byte[] field;
     private int sideSize;

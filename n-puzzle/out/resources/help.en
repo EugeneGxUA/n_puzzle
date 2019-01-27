@@ -46,3 +46,7 @@ Options
 -v          added to statistics.
 
 -h          show help.
+
+-i          read field from input stream
+
+-f          read field from file
