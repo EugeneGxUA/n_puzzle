@@ -13,12 +13,15 @@ import java.util.Random;
 
 public class MainFifteen {
 
+    public static final byte SOLUTION_TYPE_SNAIL = 5;
+    public static final byte SOLUTION_TYPE_ORDINARY = 7;
+
     private static boolean isShow = false;
     private static boolean isReadStream = false;
 
     private static int sideSize = 4;
 
-    private static int stepCount = 10;
+    private static int stepCount = 15;
 
     private static byte[] startField;
     private static byte[] terminateField;
@@ -33,11 +36,6 @@ public class MainFifteen {
                 e.printStackTrace();
                 System.exit(1);
             }
-
-//            if (sideSize == 4 && !FifteenState.checkState(startField, sideSize)) {
-//                System.out.println("I can't find a way, how to solve this fifteen");
-//                System.exit(1);
-//            }
         }
 
         int size = sideSize * sideSize;
@@ -51,7 +49,7 @@ public class MainFifteen {
             startField = generateStartState(stepCount, rules);
         }
 
-        if (sideSize == 4 && !FifteenState.checkState(startField, sideSize)) {
+        if (!FifteenState.checkState(startField, sideSize, SOLUTION_TYPE_ORDINARY)) {
             System.out.println("This field is unsolvable");
             System.exit(1);
         }
@@ -97,27 +95,27 @@ public class MainFifteen {
      */
     private static byte[] generateStartState(int swapCount, FifteenRules rules) {
 
-//        return new byte[] {0, 10, 5, 7, 11, 14, 4, 8, 1, 2, 6, 13, 12, 3, 15, 9};
+        return new byte[]  {2, 13, 4, 3, 14, 8, 10, 9, 12, 0, 1, 5, 15, 6, 7, 11};
 
-        int stepCount = swapCount;
-        byte[] startState = rules.getTerminateState();
-
-        int[] actions = rules.getActions();
-
-        Random random = new Random();
-
-        System.out.println("Start generate field with: " + sideSize + "x" + sideSize + " size;");
-        while (stepCount > 0) {
-            int j = random.nextInt(actions.length);
-            byte[] state = rules.doAction(startState, actions[j]);
-
-            if (state != null) {
-                startState = state;
-                stepCount--;
-            }
-        }
-        System.out.println("Field generate is finished;");
-        return startState;
+//        int stepCount = swapCount;
+//        byte[] startState = rules.getTerminateState();
+//
+//        int[] actions = rules.getActions();
+//
+//        Random random = new Random();
+//
+//        System.out.println("Start generate field with: " + sideSize + "x" + sideSize + " size;");
+//        while (stepCount > 0) {
+//            int j = random.nextInt(actions.length);
+//            byte[] state = rules.doAction(startState, actions[j]);
+//
+//            if (state != null) {
+//                startState = state;
+//                stepCount--;
+//            }
+//        }
+//        System.out.println("Field generate is finished;");
+//        return startState;
     }
 
     /**

@@ -22,54 +22,47 @@ public class Astar <TState extends State, TRules extends Rules<TState>> {
      * Algorithm А* to search for a shorter path to the terminal state selected.
      */
     public Collection<State> search(TState startState) {
-        //initialise close list - list of elements which we already used
-        List<Integer> close = new LinkedList<Integer>();
-        //initialise open q - list of elements which we need to check
-        Queue<TState> open = new PriorityQueue<TState>(8);
-
-        //add to open list startState - start position
+        LinkedList<Integer> close = new LinkedList<Integer>();
+        PriorityQueue<TState> open = new PriorityQueue<>();
         open.add(startState);
-        //At start pos G is 0
         startState.setG(0);
-        //get cost of this vertex
         startState.setH(rules.getH(startState));
 
-        //While open list is not empty use algo
         while (!open.isEmpty()) {
-            TState stateWithMinF = getStateWithMinF(open);
-            if (rules.isTerminate(stateWithMinF)) {
-                closedStates =  close.size();
-                return completeSolution(stateWithMinF);
+            TState x = getStateWithMinF(open);
+            if (rules.isTerminate(x)) {
+                closedStates = close.size();
+                return completeSolution(x);
             }
-            open.remove(stateWithMinF);
-            System.out.println("On this step is the best way is --> \n" + stateWithMinF.toString());
-
-            close.add(stateWithMinF.hashCode());
-            List<TState> neighbors = rules.getNeighbors(stateWithMinF);
+            open.remove(x);
+            close.add(x.hashCode());
+            List<TState> neighbors = rules.getNeighbors(x);
             for (TState neighbor : neighbors) {
                 if (close.contains(neighbor.hashCode())) {
                     continue;
                 }
-
-                int g = stateWithMinF.getG() + rules.getDistance(stateWithMinF, neighbor);
-                boolean isBestPath;
+                int g = x.getG() + rules.getDistance(x, neighbor);
+                boolean isGBetter;
                 if (!open.contains(neighbor)) {
                     neighbor.setH(rules.getH(neighbor));
+                    if (open.size() == 8) {
+                        PriorityQueue<TState> tempQ = new PriorityQueue<>(open);
+                        open.clear();
+                        for (int i = 0; i < 7; i++) {
+                            open.add(tempQ.poll());
+                        }
+                    }
                     open.add(neighbor);
-                    isBestPath = true;
+                    isGBetter = true;
                 } else {
-                    isBestPath = g < neighbor.getG();
+                    isGBetter = g < neighbor.getG();
                 }
-
-                if (isBestPath) {
-                    neighbor.setParent(stateWithMinF);
+                if (isGBetter) {
+                    neighbor.setParent(x);
                     neighbor.setG(g);
                 }
-
             }
-
         }
-
         return null;
     }
 

@@ -51,7 +51,7 @@ public class FifteenState extends State implements Comparable<State>{
         int e = 0;
 
         for (int i = 0; i < field.length; i++) {
-            // Check empty field number
+            // Check empty raw number
             if (field[i] == 0) {
                 e = i / sideSize + 1;
             }
@@ -61,6 +61,10 @@ public class FifteenState extends State implements Comparable<State>{
 
             // Check cell quantity which smaller then current
             for (int j = i + 1; j < field.length; j++) {
+                if (field[j] == 0) {
+                    continue;
+                }
+
                 if (field[j] < field[i]) {
                     N++;
                 }
@@ -70,6 +74,51 @@ public class FifteenState extends State implements Comparable<State>{
         N += e;
 
         return (N & 1) == 0; //First bit of even number is equal 0
+    }
+
+    public static boolean checkState(byte[] field, int sideSize, byte type) {
+
+        int e = 0;
+        int inversionCount = 0;
+
+        for (int i = 0; i < field.length; i++) {
+
+            if (field[i] == 0) {
+                continue;
+            }
+
+            for (int j = 0; j < i; j++) {
+                if (field[j] > field[i]) {
+                    inversionCount++;
+                }
+            }
+        }
+
+        int i = 0;
+        for (int j = field.length - 1; j >= 0; j--) {
+            if (field[j] == 0) {
+                e = i / sideSize + 1;
+                break;
+            }
+            i++;
+        }
+
+        boolean isInversionEven = inversionCount % 2 == 0;
+
+        if (sideSize % 2 != 0) {
+            if (type == MainFifteen.SOLUTION_TYPE_SNAIL) {
+                isInversionEven = !isInversionEven;
+            }
+            return isInversionEven;
+        }
+
+        if (e % 2 == 0 && !isInversionEven) {
+            return true;
+        } else if (e % 2 == 1 && isInversionEven) {
+            return true;
+        }
+
+        return false;
     }
 
     // Return field state as array of bytes

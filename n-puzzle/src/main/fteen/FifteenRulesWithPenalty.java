@@ -15,16 +15,14 @@ public class FifteenRulesWithPenalty extends FifteenRules {
     public int getH(FifteenState state) {
         int res = 0;
         int penalty = sideSize;
-
         for (int i = 0; i < size; i++) {
             if ((i + 1) % sideSize == 0) {
                 penalty--;
             }
-            if (state.getField()[i] == terminalState[i]) {
+            if (state.getField()[i] != terminalState[i]) {
                 res += penalty;
             }
         }
-
         return res;
     }
 }
