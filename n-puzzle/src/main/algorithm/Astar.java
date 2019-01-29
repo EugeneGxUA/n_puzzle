@@ -54,6 +54,7 @@ public class Astar <TState extends State, TRules extends Rules<TState>> {
                             open.add(tempQ.poll());
                         }
                     }
+                    neighbor.setG(g);
                     System.out.println(neighbor.getG() + "G \n"+ neighbor.getH() + " H");
                     open.add(neighbor);
                     isGBetter = true;
