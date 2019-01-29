@@ -49,19 +49,19 @@ public class FifteenRules implements Rules<FifteenState> {
     }
 
     @Override
-    public List<FifteenState> getNeighbors(FifteenState currentState) {
-        ArrayList<FifteenState> res = new ArrayList<FifteenState>();
+    public List<FifteenState> getNeighbors(FifteenState currentParentState) {
+        ArrayList<FifteenState> neighbors = new ArrayList<FifteenState>();
         for (int i = 0; i < actions.length; i++) {
-            byte[] field = doAction(currentState.getField(), actions[i]);
+            byte[] field = doAction(currentParentState.getField(), actions[i]);
             if (field == null) {
                 continue;
             }
 
-            FifteenState state = new FifteenState(currentState, sideSize);
-            state.setField(field);
-            res.add(state);
+            FifteenState neighborState = new FifteenState(currentParentState, sideSize);
+            neighborState.setField(field);
+            neighbors.add(neighborState);
         }
-        return res;
+        return neighbors;
     }
 
     @Override

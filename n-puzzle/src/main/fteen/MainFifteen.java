@@ -95,7 +95,7 @@ public class MainFifteen {
      */
     private static byte[] generateStartState(int swapCount, FifteenRules rules) {
 
-        return new byte[]  {2, 13, 4, 3, 14, 8, 10, 9, 12, 0, 1, 5, 15, 6, 7, 11};
+        return new byte[]  {2, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0};
 
 //        int stepCount = swapCount;
 //        byte[] startState = rules.getTerminateState();

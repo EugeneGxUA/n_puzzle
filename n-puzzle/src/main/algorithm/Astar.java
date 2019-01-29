@@ -22,9 +22,11 @@ public class Astar <TState extends State, TRules extends Rules<TState>> {
      * Algorithm А* to search for a shorter path to the terminal state selected.
      */
     public Collection<State> search(TState startState) {
+
         LinkedList<Integer> close = new LinkedList<Integer>();
         PriorityQueue<TState> open = new PriorityQueue<>();
         open.add(startState);
+
         startState.setG(0);
         startState.setH(rules.getH(startState));
 
@@ -52,6 +54,8 @@ public class Astar <TState extends State, TRules extends Rules<TState>> {
                             open.add(tempQ.poll());
                         }
                     }
+                    neighbor.setG(g);
+                    System.out.println(neighbor.getG() + "G \n"+ neighbor.getH() + " H");
                     open.add(neighbor);
                     isGBetter = true;
                 } else {

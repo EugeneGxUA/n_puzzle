@@ -78,8 +78,9 @@ public class FifteenState extends State implements Comparable<State>{
 
     public static boolean checkState(byte[] field, int sideSize, byte type) {
 
-        int e = 0;
         int inversionCount = 0;
+
+        int N = sideSize * sideSize - 1;
 
         for (int i = 0; i < field.length; i++) {
 
@@ -94,16 +95,28 @@ public class FifteenState extends State implements Comparable<State>{
             }
         }
 
-        int i = 0;
+        int e = 0;
+        int counter = 0;
         for (int j = field.length - 1; j >= 0; j--) {
             if (field[j] == 0) {
-                e = i / sideSize + 1;
+                e = counter / sideSize + 1;
                 break;
             }
-            i++;
+            counter++;
         }
 
         boolean isInversionEven = inversionCount % 2 == 0;
+
+        //Solved first state
+        if (N % 2 != 0 && isInversionEven) {
+            return true;
+        } else {
+            if (e % 2 != 0 && !isInversionEven) {
+                return true;
+            } else if (e % 2 != 1 && isInversionEven) {
+                return true;
+            }
+        }
 
         if (sideSize % 2 != 0) {
             if (type == MainFifteen.SOLUTION_TYPE_SNAIL) {
@@ -112,11 +125,6 @@ public class FifteenState extends State implements Comparable<State>{
             return isInversionEven;
         }
 
-        if (e % 2 == 0 && !isInversionEven) {
-            return true;
-        } else if (e % 2 == 1 && isInversionEven) {
-            return true;
-        }
 
         return false;
     }
