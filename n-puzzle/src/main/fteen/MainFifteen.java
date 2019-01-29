@@ -21,7 +21,7 @@ public class MainFifteen {
 
     private static int sideSize = 4;
 
-    private static int stepCount = 15;
+    private static int stepCount = 10;
 
     private static byte[] startField;
     private static byte[] terminateField;
@@ -36,6 +36,11 @@ public class MainFifteen {
                 e.printStackTrace();
                 System.exit(1);
             }
+
+//            if (sideSize == 4 && !FifteenState.checkState(startField, sideSize)) {
+//                System.out.println("I can't find a way, how to solve this fifteen");
+//                System.exit(1);
+//            }
         }
 
         int size = sideSize * sideSize;
@@ -49,7 +54,7 @@ public class MainFifteen {
             startField = generateStartState(stepCount, rules);
         }
 
-        if (!FifteenState.checkState(startField, sideSize, SOLUTION_TYPE_ORDINARY)) {
+        if (sideSize == 4 && !FifteenState.checkState(startField, sideSize)) {
             System.out.println("This field is unsolvable");
             System.exit(1);
         }
@@ -94,6 +99,7 @@ public class MainFifteen {
      * @return - generated start state
      */
     private static byte[] generateStartState(int swapCount, FifteenRules rules) {
+
 
         return new byte[]  {2, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0};
 

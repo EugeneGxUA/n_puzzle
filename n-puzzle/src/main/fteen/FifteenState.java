@@ -51,7 +51,7 @@ public class FifteenState extends State implements Comparable<State>{
         int e = 0;
 
         for (int i = 0; i < field.length; i++) {
-            // Check empty raw number
+            // Check empty field number
             if (field[i] == 0) {
                 e = i / sideSize + 1;
             }
@@ -61,10 +61,6 @@ public class FifteenState extends State implements Comparable<State>{
 
             // Check cell quantity which smaller then current
             for (int j = i + 1; j < field.length; j++) {
-                if (field[j] == 0) {
-                    continue;
-                }
-
                 if (field[j] < field[i]) {
                     N++;
                 }
@@ -75,6 +71,7 @@ public class FifteenState extends State implements Comparable<State>{
 
         return (N & 1) == 0; //First bit of even number is equal 0
     }
+
 
     public static boolean checkState(byte[] field, int sideSize, byte type) {
 

@@ -15,6 +15,7 @@ public class FifteenRulesWithPenalty extends FifteenRules {
     public int getH(FifteenState state) {
         int res = 0;
         int penalty = sideSize;
+
         for (int i = 0; i < size; i++) {
             if ((i + 1) % sideSize == 0) {
                 penalty--;
@@ -23,6 +24,7 @@ public class FifteenRulesWithPenalty extends FifteenRules {
                 res += penalty;
             }
         }
+
         return res;
     }
 }
