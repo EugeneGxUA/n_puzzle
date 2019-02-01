@@ -77,8 +77,6 @@ public class FifteenState extends State implements Comparable<State>{
 
         int inversionCount = 0;
 
-        int N = sideSize * sideSize - 1;
-
         for (int i = 0; i < field.length; i++) {
 
             if (field[i] == 0) {
@@ -105,12 +103,12 @@ public class FifteenState extends State implements Comparable<State>{
         boolean isInversionEven = inversionCount % 2 == 0;
 
         //Solved first state
-        if (N % 2 != 0 && isInversionEven) {
+        if (sideSize % 2 != 0 && isInversionEven) {
             return true;
         } else {
-            if (e % 2 != 0 && !isInversionEven) {
+            if (e % 2 == 0 && !isInversionEven) {
                 return true;
-            } else if (e % 2 != 1 && isInversionEven) {
+            } else if (e % 2 == 1 && isInversionEven) {
                 return true;
             }
         }

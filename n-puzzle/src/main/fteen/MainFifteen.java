@@ -3,10 +3,7 @@ package main.fteen;
 import main.algorithm.Astar;
 import main.algorithm.states.State;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Random;
@@ -17,30 +14,35 @@ public class MainFifteen {
     public static final byte SOLUTION_TYPE_ORDINARY = 7;
 
     private static boolean isShow = false;
-    private static boolean isReadStream = false;
+    private static boolean isReadInputStream = false;
+    private static boolean isReadFileStream = false;
 
     private static int sideSize = 4;
 
-    private static int stepCount = 10;
+    private static int stepCount = 40;
 
     private static byte[] startField;
     private static byte[] terminateField;
 
+    private static String fileName;
+
     public static void main(String[] args) {
         parseArgs(args);
 
-        if (isReadStream) {
+        if (isReadInputStream) {
             try {
-                startField = readStartStateFromSrc();
+                startField = readStartStateFromInput();
             } catch (IOException e) {
                 e.printStackTrace();
                 System.exit(1);
             }
-
-//            if (sideSize == 4 && !FifteenState.checkState(startField, sideSize)) {
-//                System.out.println("I can't find a way, how to solve this fifteen");
-//                System.exit(1);
-//            }
+        } else if (isReadFileStream) {
+            try {
+                startField = readStartStateFromFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
         }
 
         int size = sideSize * sideSize;
@@ -54,7 +56,7 @@ public class MainFifteen {
             startField = generateStartState(stepCount, rules);
         }
 
-        if (sideSize == 4 && !FifteenState.checkState(startField, sideSize)) {
+        if (!FifteenState.checkState(startField, sideSize, SOLUTION_TYPE_ORDINARY)) {
             System.out.println("This field is unsolvable");
             System.exit(1);
         }
@@ -100,28 +102,27 @@ public class MainFifteen {
      */
     private static byte[] generateStartState(int swapCount, FifteenRules rules) {
 
+//        return new byte[]  {1, 5, 3, 7, 10, 13, 6, 15, 9, 12, 4, 8, 2, 0, 14, 11};
 
-        return new byte[]  {2, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0};
+        int stepCount = swapCount;
+        byte[] startState = rules.getTerminateState();
 
-//        int stepCount = swapCount;
-//        byte[] startState = rules.getTerminateState();
-//
-//        int[] actions = rules.getActions();
-//
-//        Random random = new Random();
-//
-//        System.out.println("Start generate field with: " + sideSize + "x" + sideSize + " size;");
-//        while (stepCount > 0) {
-//            int j = random.nextInt(actions.length);
-//            byte[] state = rules.doAction(startState, actions[j]);
-//
-//            if (state != null) {
-//                startState = state;
-//                stepCount--;
-//            }
-//        }
-//        System.out.println("Field generate is finished;");
-//        return startState;
+        int[] actions = rules.getActions();
+
+        Random random = new Random();
+
+        System.out.println("Start generate field with: " + sideSize + "x" + sideSize + " size;");
+        while (stepCount > 0) {
+            int j = random.nextInt(actions.length);
+            byte[] state = rules.doAction(startState, actions[j]);
+
+            if (state != null) {
+                startState = state;
+                stepCount--;
+            }
+        }
+        System.out.println("Field generate is finished;");
+        return startState;
     }
 
     /**
@@ -132,25 +133,22 @@ public class MainFifteen {
      *         if can't read start state.
      * @throws IOException
      */
-    private static byte[] readStartStateFromSrc() throws IOException {
+    private static byte[] readStartStateFromInput() throws IOException {
 
 
-        System.out.println("Reading from stream - enter filename or field");
+        System.out.println("Reading from stream...");
 
         InputStreamReader isrt = new InputStreamReader(System.in);
 
         BufferedReader reader = new BufferedReader(isrt);
 
-        String line = null;
+        String line;
         sideSize = 0;
         StringBuffer buffer = new StringBuffer();
 
         while ((line = reader.readLine()) != null) {
             if (line.isEmpty()) {
                 break;
-            }
-            if (line.endsWith(".txt")) {
-                //read file
             }
 
             buffer.append(line);
@@ -159,7 +157,47 @@ public class MainFifteen {
 
         String state = buffer.toString();
         if (state.isEmpty()) {
-            return null;
+            throw new IllegalArgumentException("InputStream is empty");
+        } else {
+            return FifteenState.parseField(state);
+        }
+    }
+
+    /**
+     * Read start state from File Stream, defining dimension
+     * of the field use first string of file.
+     *
+     * @return byte[] which describe start state or throw IllegalArg,
+     *         if can't read start state.
+     * @throws IOException
+     */
+    private static byte[] readStartStateFromFile() throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(fileName));
+        String line;
+        sideSize = 0;
+        StringBuffer buffer = new StringBuffer();
+
+        while ((line = reader.readLine()) != null) {
+            if (line.isEmpty()) {
+                break;
+            }
+
+            if (line.matches("[0-9]\n")) {
+                if (Character.isDigit(line.charAt(0))) {
+                    sideSize = (int) line.charAt(0);
+                    continue;
+                }
+            } else {
+                throw new IllegalArgumentException("Wrong file format");
+            }
+
+            buffer.append(line);
+
+        }
+
+        String state = buffer.toString();
+        if (state.isEmpty()) {
+            throw new IllegalArgumentException("File is empty");
         } else {
             return FifteenState.parseField(state);
         }
@@ -203,8 +241,17 @@ public class MainFifteen {
 
         for (int i = 0; i < args.length; i++) {
 
-            if (args[i].equals("-f") || args[i].equals("-i")) {
-                isReadStream = true;
+            if (args[i].equals("-i")) {
+                isReadInputStream = true;
+                continue;
+            }
+            
+            if (args[i].equals("-f")) {
+                isReadFileStream = true;
+                fileName = args[++i];
+                if (!fileName.endsWith(".txt")) {
+                    throw new IllegalArgumentException("invalid file name");
+                }
                 continue;
             }
 
@@ -223,13 +270,15 @@ public class MainFifteen {
             }
 
             if (args[i].equals("-s")) {
-                isReadStream = false;
+                isReadInputStream = false;
+                isReadFileStream = false;
                 sideSize = Integer.parseInt(args[++i]);
                 continue;
             }
 
             if (args[i].equals("-c")) {
-                isReadStream = false;
+                isReadInputStream = false;
+                isReadFileStream = false;
                 stepCount = Integer.parseInt(args[++i]);
                 continue;
             }

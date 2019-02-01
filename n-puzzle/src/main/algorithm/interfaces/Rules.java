@@ -12,8 +12,7 @@ public interface Rules <TState extends State> {
      * Возвращает список состояний, в которые может быть осуществлен переход из
      * указанного состояния.
      *
-     * @param currentState
-     *            текущее состояние, для которого раскрываются соседние.
+     * @param currentState - текущее состояние, для которого раскрываются соседние.
      * @return список состояний, в которые может быть осуществлен переход из
      *         указанного состояния.
      */
@@ -22,10 +21,8 @@ public interface Rules <TState extends State> {
     /**
      * Возвращает растояние между указанными состояниями.
      *
-     * @param a
-     *            первое состояние.
-     * @param b
-     *            второе состояние.
+     * @param a - первое состояние.
+     * @param b - второе состояние.
      * @return растояние между указанными состояниями.
      */
     int getDistance(TState a, TState b);
@@ -34,18 +31,16 @@ public interface Rules <TState extends State> {
      * Вычисляет эвристическую оценку расстояния от указанного состояния до
      * конечного.
      *
-     * @param state
-     *            текущее состояние.
+     * @param state - текущее состояние.
      * @return значение оценки расстояния от указанного состояния до конечного.
      */
     int getH(TState state);
 
     /**
-     * Проверяет состояние, не является ли оно конечным.
+     * Check is this state terminal
      *
      * @param state
-     *            состояние.
-     * @return true, если состояние конечное.
+     * @return true, if state is terminal.
      */
     boolean isTerminate(TState state);
 }

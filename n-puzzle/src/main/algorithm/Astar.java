@@ -6,7 +6,6 @@ package main.algorithm;
 
 import main.algorithm.states.State;
 import main.algorithm.interfaces.Rules;
-import main.fteen.FifteenState;
 
 import java.util.*;
 
@@ -26,7 +25,13 @@ public class Astar <TState extends State, TRules extends Rules<TState>> {
         //initialise close list - list of elements which we already used
         List<Integer> close = new LinkedList<Integer>();
         //initialise open q - list of elements which we need to check
-        PriorityQueue<TState> open = new PriorityQueue<TState>(8);
+        PriorityQueue<TState> open = new PriorityQueue<TState>(new Comparator<TState>() { @Override public int compare(TState o1, TState o2) {
+            if (o1.getF() > o2.getF()) {
+                return 1;
+            } else {
+                return -1;
+            }
+        } });
 
         //add to open list startState - start position
         open.add(startState);
@@ -43,43 +48,36 @@ public class Astar <TState extends State, TRules extends Rules<TState>> {
                 return completeSolution(stateWithMinF);
             }
             open.remove(stateWithMinF);
-            System.out.println("On this step is the best way is --> \n" + stateWithMinF.toString());
 
             close.add(stateWithMinF.hashCode());
             List<TState> neighbors = rules.getNeighbors(stateWithMinF);
             for (TState neighbor : neighbors) {
+
                 if (close.contains(neighbor.hashCode())) {
                     continue;
                 }
 
                 int g = stateWithMinF.getG() + rules.getDistance(stateWithMinF, neighbor);
-                boolean isBestPath;
+
                 if (!open.contains(neighbor)) {
                     neighbor.setH(rules.getH(neighbor));
-                    if (open.size() == 8) {
-                        PriorityQueue<TState> tempQ = new PriorityQueue<>(open);
-                        open.clear();
-                        for (int i = 0; i < 7; i++) {
-                            open.add(tempQ.poll());
-                        }
-                    }
-                    System.out.println(neighbor.getG() + "G \n"+ neighbor.getH() + " H");
-                    open.add(neighbor);
-                    isBestPath = true; //todo CHECK
-                } else {
-                    isBestPath = g < neighbor.getG();
-                }
-
-                if (isBestPath) {
-                    neighbor.setParent(stateWithMinF);
                     neighbor.setG(g);
+                    neighbor.setParent(stateWithMinF);
+
+                    open.add(neighbor);
+                } else if (g < neighbor.getG()){
+                    open.remove(neighbor);
+                    neighbor.setH(rules.getH(neighbor));
+                    neighbor.setG(g);
+                    neighbor.setParent(stateWithMinF);
+                    open.add(neighbor);
                 }
 
             }
 
         }
 
-        return null;
+        throw new IllegalStateException("Illegal state");
     }
 
 
