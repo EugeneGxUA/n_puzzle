@@ -16,6 +16,9 @@ public class MainFifteen {
     private static boolean isShow = false;
     private static boolean isReadInputStream = false;
     private static boolean isReadFileStream = false;
+    private static boolean isOrdinarySolve = false;
+    private static boolean isBigPenalty = false;
+    private static boolean isEasyHeruistick = false;
 
     private static int sideSize = 4;
 
@@ -46,11 +49,23 @@ public class MainFifteen {
         }
 
         int size = sideSize * sideSize;
-        terminateField = getOrdinaryTerminalState(size, sideSize);
+        if (isOrdinarySolve) {
+            terminateField = getOrdinaryTerminalState(size, sideSize);
+        } else {
+            terminateField = getSnailTerminalState(sideSize);
+        }
 
-//        FifteenRules rules = new FifteenRulesWithPenalty(terminateField, sideSize);
-        FifteenRules rules = new FifteenRules(terminateField, sideSize);
-        FifteenState startState = new FifteenState(null, sideSize);
+        final FifteenRules rules; {
+            if (isBigPenalty) {
+                rules = new FifteenRulesWithPenalty(terminateField, sideSize);
+            } else if (isEasyHeruistick){
+                rules = new FifteenRules(terminateField, sideSize);
+            } else {
+                rules = new FifteenRulesManhattan(terminateField, sideSize);
+            }
+        }
+
+        final FifteenState startState = new FifteenState(null, sideSize);
 
         if (startField == null) {
             startField = generateStartState(stepCount, rules);
@@ -81,11 +96,13 @@ public class MainFifteen {
                 }
             }
 
-            if (isShow) {
+//            if (isShow) {
                 System.out.println("Time " + time + " ms.");
                 System.out.println("Solution length: " + (res.size() - 1));
                 System.out.println("Opened states: " + astar.getClosedStatesCount());
-            }
+                System.out.println("Total number of states ever selected in the \"opened\": " + astar.getOpenStates());
+                System.out.println("Number of moves required to transition from the initial state to the final state: " + astar.getAllMoves());
+//            }
 
         } catch (IllegalAccessException e) {
             e.printStackTrace();
@@ -172,7 +189,12 @@ public class MainFifteen {
      * @throws IOException
      */
     private static byte[] readStartStateFromFile() throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader(fileName));
+        InputStreamReader strm = new InputStreamReader(
+                //create file with help and read it
+                MainFifteen.class.getResourceAsStream("/" + fileName), StandardCharsets.UTF_8);
+
+        BufferedReader reader = new BufferedReader(strm);
+
         String line;
         sideSize = 0;
         StringBuffer buffer = new StringBuffer();
@@ -192,13 +214,14 @@ public class MainFifteen {
             }
 
             buffer.append(line);
-
         }
 
         String state = buffer.toString();
         if (state.isEmpty()) {
+            reader.close();
             throw new IllegalArgumentException("File is empty");
         } else {
+            reader.close();
             return FifteenState.parseField(state);
         }
     }
@@ -228,6 +251,20 @@ public class MainFifteen {
         return terminateField;
     }
 
+    private static byte[] getSnailTerminalState(int sideSize) {
+        if (sideSize == 2) {
+            return new byte[] {1, 2, 0, 3};
+        } else if (sideSize == 3) {
+            return new byte[] {1, 2, 3, 8, 0 ,4, 7, 6, 5};
+        } else if (sideSize == 4) {
+            return new byte[] {1, 2, 3, 4, 12, 13, 14, 5, 11, 0, 15, 6, 10, 9, 8, 7};
+        } else if (sideSize == 5) {
+            return new byte[] {1, 2, 3, 4, 5, 16, 17, 18, 19, 6, 15, 24, 0, 20, 7, 14, 23, 22, 21, 8, 13, 12, 11, 10, 9};
+        } else {
+            throw new IllegalArgumentException("I can't solve snail more then 5... Sorry");
+        }
+    }
+
     /**
      * Check start application params
      *
@@ -252,6 +289,22 @@ public class MainFifteen {
                 if (!fileName.endsWith(".txt")) {
                     throw new IllegalArgumentException("invalid file name");
                 }
+                continue;
+            }
+
+            if (args[i].equals("-ordinary")) {
+                isOrdinarySolve = true;
+                continue;
+            }
+
+            if (args[i].equals("-P")) {
+                isBigPenalty = true;
+                continue;
+            }
+
+            if (args[i].equals("-E")) {
+                isBigPenalty = false;
+                isEasyHeruistick = true;
                 continue;
             }
 

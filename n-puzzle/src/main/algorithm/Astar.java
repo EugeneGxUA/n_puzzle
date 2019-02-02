@@ -40,17 +40,21 @@ public class Astar <TState extends State, TRules extends Rules<TState>> {
         //get cost of this vertex
         startState.setH(rules.getH(startState));
 
+        // TODO: 2019-02-02 Write array into file JSON
+        // TODO: 2019-02-02 Add one more heruistic method
         //While open list is not empty use algo
         while (!open.isEmpty()) {
             TState stateWithMinF = getStateWithMinF(open);
             if (rules.isTerminate(stateWithMinF)) {
                 closedStates =  close.size();
+                openStates = open.size();
                 return completeSolution(stateWithMinF);
             }
             open.remove(stateWithMinF);
 
             close.add(stateWithMinF.hashCode());
             List<TState> neighbors = rules.getNeighbors(stateWithMinF);
+            allMoves += neighbors.size();
             for (TState neighbor : neighbors) {
 
                 if (close.contains(neighbor.hashCode())) {
@@ -132,6 +136,16 @@ public class Astar <TState extends State, TRules extends Rules<TState>> {
         this.rules = rules;
     }
 
+    public int getOpenStates() {
+        return openStates;
+    }
+
+    public int getAllMoves() {
+        return allMoves;
+    }
+
     private TRules rules;
     private int closedStates = 0;
+    private int openStates = 0;
+    private int allMoves = 0;
 }
