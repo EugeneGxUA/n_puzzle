@@ -1,4 +1,4 @@
-package main.fteen;
+package main.puzzle;
 
 import main.algorithm.Astar;
 import main.algorithm.states.State;
@@ -7,6 +7,8 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainFifteen {
 
@@ -204,16 +206,18 @@ public class MainFifteen {
                 break;
             }
 
-            if (line.matches("[0-9]\n")) {
-                if (Character.isDigit(line.charAt(0))) {
-                    sideSize = (int) line.charAt(0);
+            if (line.length() == 1) {
+                try {
+                    sideSize = Integer.parseInt(line);
                     continue;
+
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("Wrong file format");
                 }
-            } else {
-                throw new IllegalArgumentException("Wrong file format");
             }
 
             buffer.append(line);
+            buffer.append("\n");
         }
 
         String state = buffer.toString();

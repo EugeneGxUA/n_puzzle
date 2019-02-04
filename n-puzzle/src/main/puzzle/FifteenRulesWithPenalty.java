@@ -1,6 +1,4 @@
-package main.fteen;
-
-import main.algorithm.interfaces.Rules;
+package main.puzzle;
 
 public class FifteenRulesWithPenalty extends FifteenRules {
     /**

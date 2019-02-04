@@ -1,4 +1,4 @@
-package main.fteen;
+package main.puzzle;
 
 public class FifteenRulesManhattan extends FifteenRules {
     /**

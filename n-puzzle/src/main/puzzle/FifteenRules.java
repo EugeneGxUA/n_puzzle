@@ -1,4 +1,4 @@
-package main.fteen;
+package main.puzzle;
 
 import main.algorithm.interfaces.Rules;
 import main.algorithm.states.State;
