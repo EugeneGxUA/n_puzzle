@@ -25,7 +25,7 @@ public class FifteenRulesManhattan extends FifteenRules {
                 rowTerm = j / sideSize + 1;
                 colTerm++;
                 if (state.getField()[i] == terminalState[j]) {
-                    double diff = Math.sqrt(Math.pow(rowTerm - rowMain, 2) +  Math.pow(colTerm - colMain, 2));
+                    double diff = (Math.abs(rowTerm - rowMain) +  Math.abs(colTerm - colMain));
                     manhattanCounter += diff;
                 }
 

@@ -26,7 +26,7 @@ The program reads the initial state of the field from system input stream.
 
 
 
-Example of the initial state of the field
+Example of the initial state of the ordinary field
 -----------------------------
 1	0	2	3
 5	6	7	4
@@ -41,12 +41,18 @@ Options
             randomly.
 
 -c number   the number of shifts the tiles to generate the initial state.
-            The default value is 10.
+            The default value is 40.
 
 -v          added to statistics.
 
 -h          show help.
 
--i          read field from input stream
+-i          read field from input stream, all field... And use \n after line
 
--f          read field from file
+-f          read field from file (first element is side size then field)
+
+-ordinary   if you want to get ordinary terminal state you need use this flag
+
+-P          if you want get heuristic with big penalty at start
+
+-E          easy heuristic with one penalty score of one mistaken position of element

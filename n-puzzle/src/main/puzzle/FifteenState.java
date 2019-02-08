@@ -31,8 +31,12 @@ public class FifteenState extends State implements Comparable<State>{
         for (String line : lines) {
             String[] values = line.trim().replaceAll("\\s+", ":").split(":");
             for (String value : values) {
-                res[i] = Byte.parseByte(value.trim());
-                i++;
+                try {
+                    res[i] = Byte.parseByte(value.trim());
+                    i++;
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("Wrong input");
+                }
             }
         }
 

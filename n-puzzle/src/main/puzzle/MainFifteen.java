@@ -170,6 +170,10 @@ public class MainFifteen {
                 break;
             }
 
+            if (!buffer.toString().isEmpty()) {
+                buffer.append("\n");
+            }
+
             buffer.append(line);
             sideSize++;
         }
